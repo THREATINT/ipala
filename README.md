@@ -1,5 +1,5 @@
 # ipala
-IP Address List Agrregator
+IP Address List Aggregator
 
 ## Introduction
 This command line utility take a list containing ip addresses and/or networks / subnets
