@@ -61,7 +61,7 @@ func run() error {
 	}
 
 	if scanner.Err() != nil {
-		return err
+		return scanner.Err()
 	}
 
 	ips = make([]netip.Addr, len(lines))
@@ -88,7 +88,7 @@ func run() error {
 				}
 
 				if network.Overlaps(networks[i]) {
-					// Our network / subnet overlaps with an network / subnet
+					// Our network / subnet overlaps with a network / subnet
 					if networks[i].Bits() > network.Bits() {
 						// The entry at the current position of the slice
 						// is smaller than our network / subnet, to we replace the
