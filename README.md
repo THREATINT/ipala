@@ -54,3 +54,6 @@ small firewalls and similar devices.
 
 ## License
 Release under the MIT License. (see LICENSE)
+
+## QA
+[![DeepSource](https://app.deepsource.com/gh/THREATINT/ipala.svg/?label=active+issues&show_trend=true&token=rvVy0Ld0yBaWKOZsRVfXiAZW)](https://app.deepsource.com/gh/THREATINT/ipala/?ref=repository-badge)
