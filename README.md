@@ -48,8 +48,7 @@ network / subnet `10.1.0.0/16`.
 Yes and no. Regex (regular expressions) may work in most cases, but things get a bit messy when
 it comes to debugging or when you have to deal with edge cases like ip addresses in CIDR notation (`/32` for IPv4, `/128` for IPv6),
 #### Where is this tool used?
-We use this tool in our pipelines to optimise e.g. our  
-[Threat Data Feeds for SOHO](https://www.threatint.com/en/solutions/threat-data-feeds/soho). 
+We use this tool in our pipelines to optimise e.g. our [Threat Data Feeds for SOHO](https://www.threatint.com/en/solutions/threat-data-feeds/soho). 
 These feeds contain known spambots, forum spammers, ip scanners, etc. that should be blocked 
 at the WAN side of a network.
 The problem with SOHO (small office home office) network equipment is that it is notoriously low
