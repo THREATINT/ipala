@@ -25,7 +25,7 @@ func main() {
 				return errors.New("no arguments supported, please use Stdin")
 			}
 
-			return run(cCtx)
+			return run()
 		},
 	}
 
@@ -35,7 +35,7 @@ func main() {
 	}
 }
 
-func run(cCtx *cli.Context) error {
+func run() error {
 	var (
 		err      error
 		scanner  *bufio.Scanner
