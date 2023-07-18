@@ -5,4 +5,3 @@ name = "go"
 
   [analyzers.meta]
   import_root = "github.com/THREATINT/ipala"
-
