@@ -44,10 +44,10 @@ that is also listed are gone, so is the network / subnet `10.1.1.1.0/24` that is
 network / subnet `10.1.0.0/16`. 
 
 ## FAQ
-#### Does it have to be a tool of its own? Isn't it easier and more flexible to use regex and a small script to achieve the same results?
+- **Does it have to be a tool of its own? Isn't it easier and more flexible to use regex and a small script to achieve the same results?** 
 Yes and no. Regex (regular expressions) may work in most cases, but things get a bit messy when
 it comes to debugging or when you have to deal with ip addresses in CIDR notation (`/32` for IPv4, `/128` for IPv6),
-#### Where is this tool used?
+- **Where is this tool used?**
 We use this tool in our pipelines to optimise e.g. our [Threat Data Feeds for SOHO](https://www.threatint.com/en/solutions/threat-data-feeds/soho). 
 These feeds contain known spambots, forum spammers, ip scanners, etc. that should be blocked 
 at the WAN side of a network.
