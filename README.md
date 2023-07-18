@@ -63,4 +63,4 @@ for feedback and general requests. Kindly raise an issue in GitHub if you find a
 Release under the MIT License. (see LICENSE)
 
 ## QA
-[![DeepSource](https://app.deepsource.com/gh/THREATINT/ipala.svg/?label=active+issues&show_trend=true&token=rvVy0Ld0yBaWKOZsRVfXiAZW)](https://app.deepsource.com/gh/THREATINT/ipala/?ref=repository-badge)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9f6b469fc2e44c62912ed8272042e3b2)](https://app.codacy.com/gh/THREATINT/ipala/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
