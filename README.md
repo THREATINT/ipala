@@ -22,7 +22,7 @@ You can either run `go build` or go for a platform build:
 Let's jump into an example:
 
 The file `example.txt` (part of this repository) contains the following lines:
-```
+```csv
 10.1.1.1
 10.1.1.0/24
 10.1.0.0/16
@@ -33,7 +33,7 @@ The file `example.txt` (part of this repository) contains the following lines:
 192.168.3.1
 ```
 If you `cat example.txt | ipala` you get the following list:
-```
+```csv
 10.1.0.0/16
 192.168.1.0/24
 192.168.2.0/24
