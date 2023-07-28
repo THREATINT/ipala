@@ -1,11 +1,10 @@
 # ipala
-IP Address List Aggregator
+**IP** **A**ddress **L**ist **A**ggregator
 
 ## Introduction
-This command line utility take a list containing ip addresses and/or networks / subnets
-from Stdin and prints out an aggregated list to Stdout.
-The resulting (aggregated) list no longer contains ip addresses that are part of a network that 
-is on the same list. The same goes for networks / subnets that are contained in a larger network / subnet
+This command line utility takes a list of ip addresses and/or networks / subnets from `stdin` 
+and prints an aggregated list to `stdout` that no longer contains ip addresses that are part of a network that 
+is on the same list. The same goes for networks / subnets that are part of a larger network / subnet
 
 Both IPv4 and IPv6 are supported. 
 
@@ -21,7 +20,7 @@ You can either run `go build` or go for a platform build:
 ## Usage
 Let's jump into an example:
 
-The file `example.txt` (part of this repository) contains the following lines:
+A file `example.txt` contains the following lines:
 ```csv
 10.1.1.1
 10.1.1.0/24
@@ -44,16 +43,15 @@ that is also listed are gone, so is the network / subnet `10.1.1.1.0/24` that is
 network / subnet `10.1.0.0/16`. 
 
 ## FAQ
-- **Does it have to be a tool of its own? Isn't it easier and more flexible to use regex and a small script to achieve the same results?** 
+- **Do we really need a new tool? Isn't it easier and more flexible to use regex and a small script to achieve the same results?** 
 Yes and no. Regex (regular expressions) may work in most cases, but things get a bit messy when
 it comes to debugging or when you have to deal with ip addresses in CIDR notation (`/32` for IPv4, `/128` for IPv6),
 - **Where is this tool used?**
 We use this tool in our pipelines to optimise e.g. our [Threat Data Feeds for SOHO](https://www.threatint.com/en/solutions/threat-data-feeds/soho). 
 These feeds contain known spambots, forum spammers, ip scanners, etc. that should be blocked 
 at the WAN side of a network.
-The problem with SOHO (small office home office) network equipment is that it is notoriously low
-on CPU power and RAM, so smaller more optimised lists are key for a successful deployment on these
-kind of devices.
+The problem with SOHO (small office home office) network equipment is that it is notoriously low on CPU power and RAM, 
+so smaller more optimised lists are key for a successful deployment on these kind of devices.
 
 ## Feedback
 We would love to hear from you! Please contact us at [help@threatint.com](mailto:help@threatint.com) 
