@@ -67,7 +67,7 @@ func run() error {
 	ips = make([]netip.Addr, len(lines))
 	networks = make([]netip.Prefix, len(lines))
 
-	for _, line = range lines {
+	for _, line = range &lines {
 		if ip, err = netip.ParseAddr(line); err == nil {
 			for i = 0; i < len(ips); i++ {
 				if !ips[i].IsValid() {
