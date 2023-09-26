@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/netip"
 	"os"
+	"strings"
 
 	"github.com/urfave/cli/v2"
 )
@@ -20,12 +21,20 @@ func main() {
 		Name:  "ipala",
 		Usage: "IP Address List Aggregator, please see github.com/THREATINT/ipala",
 
-		Action: func(cCtx *cli.Context) error {
-			if cCtx.NArg() != 0 {
-				return errors.New("no arguments supported, please use Stdin")
+		Action: func(ctx *cli.Context) error {
+			var (
+				filterList string
+			)
+
+			if ctx.NArg() > 1 {
+				return errors.New("only one argument <filter-list> supported")
 			}
 
-			return run()
+			if ctx.NArg() == 1 {
+				filterList = ctx.Args().Get(0)
+			}
+
+			return run(filterList)
 		},
 	}
 
@@ -35,98 +44,143 @@ func main() {
 	}
 }
 
-func run() error {
+func run(filterList string) error {
 	var (
-		err      error
-		scanner  *bufio.Scanner
-		lines    []string
-		line     string
-		i, j     int
-		ip       netip.Addr
-		network  netip.Prefix
-		ips      []netip.Addr
-		networks []netip.Prefix
+		err            error
+		readFile       *os.File
+		scanner        *bufio.Scanner
+		lines          []string
+		line           string
+		i, j           int
+		ok             bool
+		ip             netip.Addr
+		network        netip.Prefix
+		filterIps      []netip.Addr
+		filterNetworks []netip.Prefix
+		ips            []netip.Addr
+		networks       []netip.Prefix
 	)
 
-	scanner = bufio.NewScanner(os.Stdin)
+	if filterList != "" {
+		if readFile, err = os.Open(filterList); err != nil {
+			return err
+		}
+		defer readFile.Close()
+		scanner = bufio.NewScanner(readFile)
+		scanner.Split(bufio.ScanLines)
+		for scanner.Scan() {
+			lines = append(lines, strings.TrimSpace(scanner.Text()))
+		}
+		filterIps = make([]netip.Addr, 0)
+		filterNetworks = make([]netip.Prefix, 0)
+		for _, line = range lines {
+			if ip, err = netip.ParseAddr(line); err == nil {
+				filterIps = append(filterIps, ip)
+			} else if network, err = netip.ParsePrefix(line); err == nil {
+				filterNetworks = append(filterNetworks, network)
+			}
+		}
+		lines = []string{}
+	}
 
+	scanner = bufio.NewScanner(os.Stdin)
 	for {
 		scanner.Scan()
-		line := scanner.Text()
+		line = scanner.Text()
 
 		if len(line) == 0 {
 			break
 		}
-		lines = append(lines, line)
+		lines = append(lines, strings.TrimSpace(line))
 	}
-
 	if scanner.Err() != nil {
 		return scanner.Err()
 	}
-
-	ips = make([]netip.Addr, len(lines))
-	networks = make([]netip.Prefix, len(lines))
-
+	ips = make([]netip.Addr, 0)
+	networks = make([]netip.Prefix, 0)
 	for _, line = range lines {
+		if network, err = netip.ParsePrefix(line); err == nil {
+			if network.IsSingleIP() {
+				line = strings.TrimRight(line, "/32")
+				line = strings.TrimRight(line, "/128")
+			}
+		}
+
+		ok = true
+
 		if ip, err = netip.ParseAddr(line); err == nil {
-			for i = 0; i < len(ips); i++ {
-				if !ips[i].IsValid() {
-					ips[i] = ip
+			for i = 0; i < len(filterIps); i++ {
+				if filterIps[i].Compare(ip) == 0 {
+					ok = false
 					break
 				}
 			}
-		} else if network, err = netip.ParsePrefix(line); err == nil {
-			for i = 0; i < len(networks); i++ {
-				if !networks[i].IsValid() {
-					// we have reached the first entry in the slice that is
-					// uninitialised. That meas we have gone through the list
-					// without finding a network that matches our network, so
-					// we store our network at the current position,
-					// effectively adding it to the slice
-					networks[i] = network
-					break
-				}
-
-				if network.Overlaps(networks[i]) {
-					// Our network / subnet overlaps with a network / subnet
-					if networks[i].Bits() > network.Bits() {
-						// The entry at the current position of the slice
-						// is smaller than our network / subnet, to we replace the
-						// entry in the slice
-						networks[i] = network
+			if ok {
+				for i = 0; i < len(filterNetworks); i++ {
+					if filterNetworks[i].Contains(ip) {
+						ok = false
 						break
 					}
+				}
+
+				if ok {
+					for i = 0; i < len(ips); i++ {
+						// the same ip address is already in the list -> skip
+						if ips[i].Compare(ip) == 0 {
+							ok = false
+							break
+						}
+					}
+
+					if ok {
+						ips = append(ips, ip)
+					}
+				}
+			}
+		} else if network, err = netip.ParsePrefix(line); err == nil {
+			for i = 0; i < len(filterNetworks); i++ {
+				if filterNetworks[i].Overlaps(network) {
+					ok = false
+					break
+				}
+			}
+			if ok {
+				for i = 0; i < len(networks); i++ {
+					if network.Overlaps(networks[i]) {
+						// Our network / subnet overlaps with a network / subnet
+						if networks[i].Bits() > network.Bits() {
+							// The entry at the current position of the slice
+							// is smaller than our network / subnet, to we replace the
+							// entry in the slice
+							networks[i] = network
+						}
+						ok = false
+						break
+					}
+				}
+
+				if ok {
+					networks = append(networks, network)
 				}
 			}
 		}
 	}
 
 	for i = 0; i < len(networks); i++ {
-		if !networks[i].IsValid() {
-			break
-		}
-
-		fmt.Println(networks[i].String())
+		fmt.Println(networks[i])
 	}
 
 	for i = 0; i < len(ips); i++ {
-		if !ips[i].IsValid() {
-			break
-		}
+		ok = true
 
 		for j = 0; j < len(networks); j++ {
-			if !networks[j].IsValid() {
-				// we have gone through the whole list and have not found
-				// a network that contains our ip address, so we use our ip
-				fmt.Println(ips[i].String())
-				break
-			}
-
 			if networks[j].Contains(ips[i]) {
-				// we have found a network that contains our ip address,
-				// so we drop the ip address
+				ok = false
 				break
 			}
+		}
+		if ok {
+			fmt.Println(ips[i])
 		}
 	}
 
