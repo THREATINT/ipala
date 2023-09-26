@@ -86,12 +86,10 @@ func run(filterList string) error {
 	scanner = bufio.NewScanner(os.Stdin)
 	for {
 		scanner.Scan()
-		line = scanner.Text()
-
-		if len(line) == 0 {
+		if line = strings.TrimSpace(scanner.Text()); line == "" {
 			break
 		}
-		lines = append(lines, strings.TrimSpace(line))
+		lines = append(lines, line)
 	}
 	if scanner.Err() != nil {
 		return scanner.Err()
